@@ -11,6 +11,29 @@ Here are some selling points:
 * Has some tools to tokenize training data.
 
 
+# Hello, Tokenex!
+
+Download v0.1 package here:
+https://dlwteam.visualstudio.com/6894e6c5-e313-4afd-9c46-95fbfd40a7a8/_api/_versioncontrol/itemContent?repositoryId=e6217287-ad4a-452a-b169-a75286a95971&path=%2Fdist%2Ftokenex-0.1-py3-none-any.whl&version=GBmaster&contentOnly=false&__v=5
+
+Go to where you downloaded it and run:
+
+> sudo pip3 install tokenex-0.1-py3-none-any.whl
+
+## For Python3
+
+### Using the default config
+> from tokenex.tokenizer as Tokenizer
+> t = Tokenizer()
+> t.tokenize('hello, world')
+
+### Keep space and don't use regex
+> from tokenex.tokenizer as Tokenizer
+> t = Tokenizer(3)
+> t.tokenize('hello, world')
+
+##Everything below here requires checking out the repo
+
 To play with this:
 
 *Shell Test App*
