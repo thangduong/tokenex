@@ -1,7 +1,7 @@
 from ctypes import *
 import os
 
-script_dir = os.path.dirname(os.path.realpath(__file__))
+script_dir = os.path.dirname(os.path.abspath(__file__))
 
 if os.name=='nt':
 	tok_so = cdll.LoadLibrary(os.path.join(script_dir,'tokenizer.dll'))
