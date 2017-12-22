@@ -6,7 +6,7 @@ input_string = "hello= ===ther’e 520"
 
 if len(sys.argv)>1:
   input_string = sys.argv[1]
-tok = t.Tokenizer(3)
+tok = t.Tokenizer(0)
 tokens = tok.tokenize(input_string)
 output = ' '.join(tokens)
 

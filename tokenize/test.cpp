@@ -14,6 +14,7 @@ int main(int argc, char* argv[]) {
 		cout << "Usage: " << argv[0] << " <test_text>" << endl;
 	}
 	Tokenizer tokenizer;
+	tokenizer.LoadDefaultConfig();
 	string tokenized_line = tokenizer.TokenizeAndJuxtapose(argv[1]);
 	cout <<  "[" << tokenized_line << "]" << endl;
 	return 0;
