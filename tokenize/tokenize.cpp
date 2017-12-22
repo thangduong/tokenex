@@ -15,6 +15,7 @@ int main(int argc, char* argv[]) {
 		cout << "output goes to stdout" << endl;
 	}
 	Tokenizer tokenizer;
+	tokenizer.LoadDefaultConfig();
 	ifstream infile(argv[1]);
 	string line;
 	int number_of_lines_processed = 0;
