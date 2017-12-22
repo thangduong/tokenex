@@ -394,7 +394,7 @@ string Tokenizer::Translit(const string& input_string) {
 	int marker = 0;
 	int start_marker = marker;
 	string result = "";
-	while (marker < input_string.length()) {
+	while (marker < (int)input_string.length()) {
 		for (auto len = _min_translit_len; len <= _max_translit_len; len++) {
 			string piece = input_string.substr(marker, len);
 			auto match = _translit_map.find(piece);
@@ -407,7 +407,7 @@ string Tokenizer::Translit(const string& input_string) {
 		}
 		marker += 1;
 	}
-	if (start_marker < input_string.length())
+	if (start_marker < (int)input_string.length())
 		result += input_string.substr(start_marker);
 	return result;
 }
