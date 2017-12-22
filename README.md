@@ -23,14 +23,18 @@ Go to where you downloaded it and run:
 ## For Python3
 
 ### Using the default config
-> from tokenex.tokenizer as Tokenizer
-> t = Tokenizer()
-> t.tokenize('hello, world')
+```python
+from tokenex.tokenizer as Tokenizer
+t = Tokenizer()
+t.tokenize('hello, world')
+```
 
 ### Keep space and don't use regex
-> from tokenex.tokenizer as Tokenizer
-> t = Tokenizer(3)
-> t.tokenize('hello, world')
+```python
+from tokenex.tokenizer as Tokenizer
+t = Tokenizer(3)
+t.tokenize('hello, world')
+```
 
 ##Everything below here requires checking out the repo
 
