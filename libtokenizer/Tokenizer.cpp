@@ -212,17 +212,82 @@ void Tokenizer::LoadDefaultConfig(int config_type) {
 	_translit_map[u8"‘"] = "'";
 	_translit_map[u8"…"] = "...";
 	_translit_map["''"] = "\"";		// this is questionable
+	_translit_map["``"] = "\"";		// this is questionable
 	_translit_map[u8"À"] = "A";
 	_translit_map[u8"Á"] = "A";
 	_translit_map[u8"Â"] = "A";
 	_translit_map[u8"Ã"] = "A";
 	_translit_map[u8"Ä"] = "A";
 	_translit_map[u8"Å"] = "A";
+	_translit_map[u8"Æ"] = "AE";
+	_translit_map[u8"Ç"] = "c";
+
+	_translit_map[u8"È"] = "E";
+	_translit_map[u8"É"] = "E";
+	_translit_map[u8"Ê"] = "E";
+	_translit_map[u8"Ë"] = "E";
+
+	_translit_map[u8"Ì"] = "I";
+	_translit_map[u8"Í"] = "I";
+	_translit_map[u8"Î"] = "I";
+	_translit_map[u8"Ï"] = "I";
+
+	_translit_map[u8"Ñ"] = "N";
+
+	_translit_map[u8"Ò"] = "O";
+	_translit_map[u8"Ó"] = "O";
+	_translit_map[u8"Ô"] = "O";
+	_translit_map[u8"Õ"] = "O";
+	_translit_map[u8"Ö"] = "O";
+
+	_translit_map[u8"×"] = "x";
+	_translit_map[u8"Ø"] = "O";
+
+	_translit_map[u8"Ù"] = "U";
+	_translit_map[u8"Ú"] = "U";
+	_translit_map[u8"Û"] = "U";
+	_translit_map[u8"Ü"] = "U";
+
+	_translit_map[u8"Ý"] = "Y";
+
+	_translit_map[u8"à"] = "a";
+	_translit_map[u8"á"] = "a";
+	_translit_map[u8"â"] = "a";
+	_translit_map[u8"ã"] = "a";
+	_translit_map[u8"ä"] = "a";
+	_translit_map[u8"å"] = "a";
+
+	_translit_map[u8"æ"] = "ae";
+
+	_translit_map[u8"ç"] = "c";
+
 	_translit_map[u8"è"] = "e";
 	_translit_map[u8"é"] = "e";
 	_translit_map[u8"ê"] = "e";
 	_translit_map[u8"ë"] = "e";
 	_translit_map[u8"″"] = "\"";
+	_translit_map[u8"ì"] = "i";
+	_translit_map[u8"í"] = "i";
+	_translit_map[u8"î"] = "i";
+	_translit_map[u8"ï"] = "i";
+
+	_translit_map[u8"ò"] = "o";
+	_translit_map[u8"ó"] = "o";
+	_translit_map[u8"ô"] = "o";
+	_translit_map[u8"õ"] = "o";
+	_translit_map[u8"ö"] = "o";
+
+	_translit_map[u8"ù"] = "u";
+	_translit_map[u8"ú"] = "u";
+	_translit_map[u8"û"] = "u";
+	_translit_map[u8"ü"] = "u";
+
+	_translit_map[u8"ý"] = "y";
+	_translit_map[u8"ÿ"] = "y";
+
+	_translit_map[u8"÷"] = "/";
+	_translit_map[u8"ø"] = "o";
+	_translit_map[u8"ñ"] = "n";
 
 	// tuple meaning:
 	//	0 = regular expression
