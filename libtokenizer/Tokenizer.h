@@ -13,6 +13,11 @@ class Tokenizer
 	enum {
 		REGEX_TOKEN_TYPE_START = 100
 	};
+	enum DefaultConfigType {
+		DEFAULT_CONFIG_TYPE_STANDARD = 0,
+		DEFUALT_CONFIG_TYPE_KEEP_ALL = 1,
+		DEFAULT_CONFIG_TYPE_NO_REGEX = 2
+	};
 	list<string> _discard_delimiters;
 	list<string> _retain_delimiters;
 	list<string> _exception_tokens;
@@ -72,6 +77,9 @@ class Tokenizer
 		else
 			return input_string;
 	}
+
+
+	void UpdateMinMaxLength();
 public:
 	Tokenizer();
 	virtual ~Tokenizer();
@@ -79,6 +87,6 @@ public:
 	string Translit(const string& input_string);
 	list<tuple<int, int, int>> Tokenize(const string& input_string, bool translit, list<string>* token_list = 0);
 	string TokenizeAndJuxtapose(const string& input_string, bool translit = true, list<pair<int, int>>* token_start_len = 0);
-	
+	void LoadDefaultConfig(int config_type = DEFAULT_CONFIG_TYPE_STANDARD);
 };
 

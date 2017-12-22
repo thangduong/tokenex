@@ -14,6 +14,8 @@ namespace TokenizerCS
         [DllImport(@"tokenizer.dll")]
         public static extern void UnloadTokenizer(IntPtr tokenizer);
         [DllImport(@"tokenizer.dll")]
+        public static extern void LoadDefaultConfig(IntPtr tokenizer, int config_type);
+        [DllImport(@"tokenizer.dll")]
         public static extern IntPtr TokenizeString(IntPtr tokenizer, string input_string, bool translit);
         [DllImport(@"tokenizer.dll")]
         public static extern IntPtr NextToken(IntPtr result, ref int start, ref int len, ref int type);
@@ -34,9 +36,10 @@ namespace TokenizerCS
             public int type;
         };
 
-        public Tokenizer()
+        public Tokenizer(int config_type = 0)
         {
             _tokenizer = LoadTokenizer();
+            LoadDefaultConfig(_tokenizer, config_type);
         }
 
         /// <summary>

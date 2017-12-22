@@ -3,6 +3,15 @@
 #include <iostream>
 using namespace std;
 
+Tokenizer::Tokenizer()
+{
+}
+
+
+Tokenizer::~Tokenizer()
+{
+}
+
 template <class T>
 void getMinMaxLenFromCollection(const T& collection, int& min_len, int& max_len) {
 	if (collection.size() == 0)
@@ -17,9 +26,22 @@ void getMinMaxLenFromCollection(const T& collection, int& min_len, int& max_len)
 	}
 }
 
-Tokenizer::Tokenizer()
-{
-	// TODO: use hash + set membership to speed up tokenization
+void Tokenizer::UpdateMinMaxLength() {
+	// compute min and max lengths
+	_max_translit_len = _min_translit_len = (int)_translit_map.begin()->first.length();
+	for (auto translit_itr = _translit_map.begin(); translit_itr != _translit_map.end(); translit_itr++) {
+		if ((int)translit_itr->first.length() < _min_translit_len)
+			_min_translit_len = (int)translit_itr->first.length();
+		else if ((int)translit_itr->first.length() > _max_translit_len)
+			_max_translit_len = (int)translit_itr->first.length();
+	}
+
+	getMinMaxLenFromCollection(_discard_delimiters, _min_discard_delim_len, _max_discard_delim_len);
+	getMinMaxLenFromCollection(_retain_delimiters, _min_retain_delim_len, _max_retain_delim_len);
+	getMinMaxLenFromCollection(_exception_tokens, _min_exception_token_len, _max__exception_token_len);
+}
+
+void Tokenizer::LoadDefaultConfig(int config_type) {
 	_discard_delimiters.push_back(" ");
 	_discard_delimiters.push_back("\t");
 	_discard_delimiters.push_back("\r");
@@ -27,6 +49,11 @@ Tokenizer::Tokenizer()
 	_discard_delimiters.push_back("\xc2");
 	_discard_delimiters.push_back("\xa0");
 	_discard_delimiters.push_back(u8"¬");	// not sure what this is.  probably just noise!
+
+	if (config_type & DEFUALT_CONFIG_TYPE_KEEP_ALL) {
+		// make all discard delimiters retain delimiters
+		_retain_delimiters.splice(_retain_delimiters.end(), _discard_delimiters);
+	}
 
 	_retain_delimiters.push_back("....");
 	_retain_delimiters.push_back("...");
@@ -138,7 +165,6 @@ Tokenizer::Tokenizer()
 	_exception_tokens.push_back(u8"`t");
 	_exception_tokens.push_back(">=");
 	_exception_tokens.push_back("<=");
-//	_exception_tokens.push_back("==");
 
 	_exception_tokens_delimited_before.push_back("dr.");
 	_exception_tokens_delimited_before.push_back("Dr.");
@@ -198,51 +224,33 @@ Tokenizer::Tokenizer()
 	_translit_map[u8"ë"] = "e";
 	_translit_map[u8"″"] = "\"";
 
-
-	// compute min and max lengths
-	_max_translit_len = _min_translit_len = (int)_translit_map.begin()->first.length();
-	for (auto translit_itr = _translit_map.begin(); translit_itr != _translit_map.end(); translit_itr++) {
-		if ((int)translit_itr->first.length() < _min_translit_len)
-			_min_translit_len = (int)translit_itr->first.length();
-		else if ((int)translit_itr->first.length() > _max_translit_len)
-			_max_translit_len = (int)translit_itr->first.length();
-	}
-
-	getMinMaxLenFromCollection(_discard_delimiters, _min_discard_delim_len, _max_discard_delim_len);
-	getMinMaxLenFromCollection(_retain_delimiters, _min_retain_delim_len, _max_retain_delim_len);
-	getMinMaxLenFromCollection(_exception_tokens, _min_exception_token_len, _max__exception_token_len);
-
-
 	// tuple meaning:
 	//	0 = regular expression
 	//	1 = string to identify token, if "", then string is actual matched string
 	//	2 = true if this can act as a retain delimiter, false if not
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^[12][0-9][0-9]0s"), "<decade-year>", false));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^[0-9]0s"), "<decade>", false));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^(\\([0-9][0-9][0-9]\\)|[0-9][0-9][0-9])[ -]*[0-9][0-9][0-9][ -]*[0-9][0-9][0-9][0-9]"), "<phone>", false));
-//	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^[0-9][0-9][0-9]-[0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]"), "<phone>", false));
-//_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^19[0-9][0-9]"), "<year>"));
-//_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^20[0-9][0-9]"), "<year>"));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9][0-9][0-9]|[0-9][0-9]|[0-9])(,[0-9][0-9][0-9])+"), "<large-int>", false));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]*)[.]([0-9])+"), "<decimal>", false));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([A-Za-z][.])+[A-Za-z]?"), "", false));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^[=]+"), "", true));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]*[04-9]th)|^([0-9]*[1]st)|^([0-9]*[2]nd)|^([0-9]*[3]rd)"), "<ordinal>", false));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9])+k"), "<int-k>", false));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9])+"), "<int>", false));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^0"), "<zero>", false));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^1"), "<one>", false));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^2"), "<two>", false));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^3"), "<three>", false));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+"), "<email>", false));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^http[s]?://[a-zA-z.]+(/[a-zA-z.]+)*"), "<url>", false));
-//	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^https://[a-zA-z.]+(/[a-zA-z.]+)*"), "<url>", false));
+
+	if (!(config_type & DEFAULT_CONFIG_TYPE_NO_REGEX)) {
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^[12][0-9][0-9]0s"), "<decade-year>", false));
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^[0-9]0s"), "<decade>", false));
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^(\\([0-9][0-9][0-9]\\)|[0-9][0-9][0-9])[ -]*[0-9][0-9][0-9][ -]*[0-9][0-9][0-9][0-9]"), "<phone>", false));
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9][0-9][0-9]|[0-9][0-9]|[0-9])(,[0-9][0-9][0-9])+"), "<large-int>", false));
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]*)[.]([0-9])+"), "<decimal>", false));
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([A-Za-z][.])+[A-Za-z]?"), "", false));
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^[=-]+"), "", true));
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]*[04-9]th)|^([0-9]*[1]st)|^([0-9]*[2]nd)|^([0-9]*[3]rd)"), "<ordinal>", false));
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9])+k"), "<int-k>", false));
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9])+"), "<int>", false));
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^0"), "<zero>", false));
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^1"), "<one>", false));
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^2"), "<two>", false));
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^3"), "<three>", false));
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+"), "<email>", false));
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^http[s]?://[a-zA-z.]+(/[a-zA-z.]+)*"), "<url>", false));
+	}
+
+	UpdateMinMaxLength();
 }
 
-
-Tokenizer::~Tokenizer()
-{
-}
 bool Tokenizer::CheckDelimiters(int matched_token_len, 
 	int matched_type, 
 	const string& input_string, 
@@ -304,9 +312,30 @@ list<tuple<int,int,int>> Tokenizer::Tokenize(const string& input_string, bool tr
 		int regex_pattern_matched;
 		size_t matched_regex_token_len = RegexStringMatch(_exception_token_group_regex, input_string, marker, (marker == start_marker), &regex_pattern_matched);
 		if ((matched_regex_token_len>0) 
-			&& (get<2>(_exception_token_group_regex[regex_pattern_matched - REGEX_TOKEN_TYPE_START]) || (marker == start_marker))
-			&& CheckDelimiters((int)matched_regex_token_len, regex_pattern_matched, input_string, start_marker, marker, result, translit, token_list))
-			continue;
+			&& (get<2>(_exception_token_group_regex[regex_pattern_matched - REGEX_TOKEN_TYPE_START]) || (marker == start_marker))) {
+			if (get<2>(_exception_token_group_regex[regex_pattern_matched - REGEX_TOKEN_TYPE_START])) {
+				// can act as delimiter, no need to check that the second piece is delimiter.  just skip forward
+				// treat as if delimiter
+				if (start_marker < marker) {
+					tuple<int, int, int> token(start_marker, marker - start_marker, 0);
+					result.push_back(token);
+					if (token_list)
+						token_list->push_back(Translit(input_string.substr(get<0>(token), get<1>(token)), translit));
+				}
+				tuple<int, int, int> token(marker, (int)matched_regex_token_len, 0);
+				result.push_back(token);
+				if (token_list)
+					token_list->push_back(Translit(input_string.substr(get<0>(token), get<1>(token)), translit));
+
+				marker += (int)matched_regex_token_len;
+				start_marker = marker;
+				continue;
+			}
+			else {
+				if (CheckDelimiters((int)matched_regex_token_len, regex_pattern_matched, input_string, start_marker, marker, result, translit, token_list))
+					continue;
+			}
+		}
 
 		size_t discard_token_len = ExactStringMatch(_discard_delimiters, input_string, marker);
 		if (discard_token_len > 0) {

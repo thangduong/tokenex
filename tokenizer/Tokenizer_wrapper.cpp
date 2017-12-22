@@ -24,6 +24,9 @@ extern "C" {
 		void* result = reinterpret_cast<void*>(new TokenizerObject());
 		return result;
 	}
+	DLL_EXPORT void CALL_CONV LoadDefaultConfig(void* tokenizer, int config_type) {
+		(reinterpret_cast<TokenizerObject*>(tokenizer))->tokenizer.LoadDefaultConfig(config_type);
+	}
 	DLL_EXPORT void CALL_CONV UnloadTokenizer(void* tokenizer) {
 		delete reinterpret_cast<TokenizerObject*>(tokenizer);
 	}
