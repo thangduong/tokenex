@@ -239,11 +239,11 @@ void Tokenizer::LoadDefaultConfig(int config_type) {
 		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^[=-]+"), "", true));
 		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]*[04-9]th)|^([0-9]*[1]st)|^([0-9]*[2]nd)|^([0-9]*[3]rd)"), "<ordinal>", false));
 		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9])+k"), "<int-k>", false));
-		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9])+"), "<int>", false));
 		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^0"), "<zero>", false));
 		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^1"), "<one>", false));
 		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^2"), "<two>", false));
 		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^3"), "<three>", false));
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9])+"), "<int>", false));
 		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+"), "<email>", false));
 		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^http[s]?://[a-zA-z.]+(/[a-zA-z.]+)*"), "<url>", false));
 	}
