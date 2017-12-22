@@ -48,7 +48,7 @@ namespace TokenizerCS
         /// <param name="input_string">Input string to tokenize.  Try "F.D.R. was a great president in the 1930s."</param>
         /// <param name="translit">True to turn on UTF-8 to ASCII translit</param>
         /// <returns>A list of tokens</returns>
-        public List<Token> Tokenize(string input_string, bool translit=true)
+        public List<Token> TokenizeEx(string input_string, bool translit=true)
         {
             List<Token> token_list = new List<Token>();
             IntPtr tokenized_result = TokenizeString(_tokenizer, input_string, translit);
@@ -59,6 +59,22 @@ namespace TokenizerCS
                 token.token = Marshal.PtrToStringAnsi(native_string);
                 token_list.Add(token);
             }
+            FreeTokenizedResult(tokenized_result);
+            return token_list;
+        }
+
+        public List<string> Tokenize(string input_string, bool translit=true)
+        {
+            List<string> token_list = new List<string>();
+            IntPtr tokenized_result = TokenizeString(_tokenizer, input_string, translit);
+            Token token;
+            token.start = token.len = token.type = 0;
+            IntPtr native_string = IntPtr.Zero;
+            while ((native_string = NextToken(tokenized_result, ref token.start, ref token.len, ref token.type)) != IntPtr.Zero) {
+                token.token = Marshal.PtrToStringAnsi(native_string);
+                token_list.Add(token.token);
+            }
+            FreeTokenizedResult(tokenized_result);
             return token_list;
         }
 
