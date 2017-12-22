@@ -30,13 +30,69 @@ The output should look something like this:
 > hello === world ! It is about to be <int> ! We are one year closer to <int> . I hope the <decade-year> will be better than <decade-year>
 
 
-### How to use the Python API
+### How to use the Python API?
+
+Add the ./tokenex directory to your PYTHONPATH environment variable.
+
+(in Linux)
+> export PYTHONPATH=$PYTHONPATH:./tokenex
+
+(in Windows)
+> set PYTHONPATH=%PATH%:./tokenex
+
+
+See *./tokenex/test.py* for an example.
+
+To use the default tokenizer settings:
+
+```python
+import tokenizer as t
+tok = t.Tokenizer(0)                           # config option 0 is standard
+tokens = tok.tokenize("hello, world!")
+print(' '.join(tokens))
+```
+
+This version will discard space, \r, \n, \t, etc.  and it will automatically translit from UTF-8 to ASCII.
+
+To just tokenize and keep everything unchanged:
+
+```python
+import tokenizer as t
+tok = t.Tokenizer(3)                           # config option 3 keeps everything
+tokens = tok.tokenize("hello, world!")
+print(' '.join(tokens))
+```
+
+For additional details, see the class definition in tokenex/tokenizer.py.
 
 
 
-### How to use the C# API
+### How to use the C# API?
 
 
+Reference tokenizerCS package (.\tokenex\tokenizerCS.dll)
+
+
+```csharp
+using TokenizerCS;
+```
+
+Then:
+
+```csharp
+Tokenizer tok = new Tokenizer(0);           // change this config option to 3 to keep everything
+var result = tok.TokenizeEx("hello, world!");
+foreach (var token in result)
+        System.Console.WriteLine("{0}", token);
+```
+
+### How to tokenize a large txt training data file?
+
+Use the program .\tokenex\tokenize.exe (or ./tokenex/tokenize for Linux).
+
+In Linux (and it should be similar in Windows):
+
+> ./tokenex/tokenize <input-file> > <output-file>
 
 
 ### Relevant subdirectories:
@@ -60,7 +116,7 @@ The output should look something like this:
 
 ### Building in Windows
 
-* Load token
+* Load tokenex.sln, and build all.
 
 ### Building in Linux
 
