@@ -432,7 +432,7 @@ list<tuple<int,int,int>> Tokenizer::Tokenize(const string& input_string, bool tr
 				if (token_list)
 					token_list->push_back(Translit(input_string.substr(get<0>(token), get<1>(token)),translit));
 			}
-			marker += discard_token_len;
+			marker += (int)discard_token_len;
 			start_marker = marker;
 			continue;
 		}
