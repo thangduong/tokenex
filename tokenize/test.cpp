@@ -6,6 +6,7 @@
 #include <thread>
 #include <cwchar>
 #include <clocale>
+#include <cinttypes>
 #include "Tokenizer.h"
 
 using namespace std;
@@ -18,6 +19,8 @@ int main(int argc, char* argv[]) {
 	Tokenizer tokenizer;
 	tokenizer.LoadDefaultConfig();
 	string tokenized_line = tokenizer.TokenizeAndJuxtapose(argv[1], true, true);
+//	for (int i = 0; i < tokenized_line.length(); i++)
+//	cout << static_cast<uint8_t>(tokenized_line.c_str()[i])	<<","<< (int)static_cast<uint8_t>(tokenized_line.c_str()[i]) << endl;
 	cout <<  "[" << tokenized_line << "]" << endl;
 	return 0;
 }

@@ -42,12 +42,13 @@ void Tokenizer::UpdateMinMaxLength() {
 }
 
 void Tokenizer::LoadDefaultConfig(int config_type) {
+	_discard_delimiters.push_back("\xc2\xa0");
+	_discard_delimiters.push_back("\x20\xa0");
 	_discard_delimiters.push_back(" ");
 	_discard_delimiters.push_back("\t");
 	_discard_delimiters.push_back("\r");
 	_discard_delimiters.push_back("\n");
-	_discard_delimiters.push_back("\xc2\xa0");
-	_discard_delimiters.push_back(u8"¬");	// not sure what this is.  probably just noise!
+//	_discard_delimiters.push_back(u8"¬");	// not sure what this is.  probably just noise!
 
 	if (config_type & DEFUALT_CONFIG_TYPE_KEEP_ALL) {
 		// make all discard delimiters retain delimiters
@@ -112,6 +113,7 @@ void Tokenizer::LoadDefaultConfig(int config_type) {
 	_retain_delimiters.push_back(u8"·");
 	_retain_delimiters.push_back(u8"£");
 	_retain_delimiters.push_back(u8"±");
+	_retain_delimiters.push_back(u8"");
 
 	_exception_tokens.push_back(u8"'s");
 	_exception_tokens.push_back(u8"'S");
@@ -430,7 +432,7 @@ list<tuple<int,int,int>> Tokenizer::Tokenize(const string& input_string, bool tr
 				if (token_list)
 					token_list->push_back(Translit(input_string.substr(get<0>(token), get<1>(token)),translit));
 			}
-			marker += 1;
+			marker += discard_token_len;
 			start_marker = marker;
 			continue;
 		}
