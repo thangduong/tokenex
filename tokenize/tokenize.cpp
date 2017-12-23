@@ -5,6 +5,8 @@
 #include <chrono>
 #include <thread>
 #include <unordered_map>
+#include <locale>
+#include <codecvt>
 #include "Tokenizer.h"
 
 using namespace std;
@@ -24,6 +26,8 @@ int main(int argc, char* argv[]) {
 	long long write_time;
 	long long max_read_time = 0, max_write_time = 0, max_tok_time = 0;
 	size_t max_line_len = 0;
+//	std::codecvt_utf8<wchar_t, 0x10ffff, std::consume_header> codec;
+//	infile.imbue(std::locale(std::locale(), &codec));
 	while (getline(infile, line)) {
 		auto t1 = Clock::now();
 		number_of_lines_processed += 1;

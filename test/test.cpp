@@ -3,6 +3,8 @@
 #include "Tokenizer.h"
 #include <regex>
 #include <fstream>
+#include <cwchar>
+#include <clocale>
 using namespace std;
 int main(int argc, char* argv[]) {
 	Tokenizer t;

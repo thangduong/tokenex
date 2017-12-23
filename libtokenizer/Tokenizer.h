@@ -41,7 +41,7 @@ class Tokenizer
 		}
 		return 0;
 	}
-	inline size_t RegexStringMatch(vector<tuple<regex,string,bool>>& candidates, const string& input_string, int start, bool test_all_regex, int* pattern_matched)
+	inline pair<size_t,size_t> RegexStringMatch(vector<tuple<regex,string,bool>>& candidates, const string& input_string, int start, bool test_all_regex, int* pattern_matched)
 	{
 		int idx = 0;
 		for (auto candidate_itr = candidates.begin();
@@ -54,15 +54,16 @@ class Tokenizer
 				if (sm.length()) {
 					if (pattern_matched)
 						(*pattern_matched) = idx + REGEX_TOKEN_TYPE_START;
-					size_t result = sm[0].length();
-					return result;
+					// return is: length of string to capture,
+					// length to delimiter is required
+					return pair<size_t,size_t>(sm[1].length(),sm[0].length());
 				}
 			}
 		}		
-		return 0;
+		return pair<size_t,size_t>(0,0);
 	}
 
-	bool CheckDelimiters(int matched_token_len,
+	bool CheckDelimiters(int matched_token_len, int check_len,
 		int matched_type,
 		const string& input_string,
 		int& start_marker,

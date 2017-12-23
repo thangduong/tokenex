@@ -4,6 +4,8 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
+#include <cwchar>
+#include <clocale>
 #include "Tokenizer.h"
 
 using namespace std;
@@ -15,7 +17,7 @@ int main(int argc, char* argv[]) {
 	}
 	Tokenizer tokenizer;
 	tokenizer.LoadDefaultConfig();
-	string tokenized_line = tokenizer.TokenizeAndJuxtapose(argv[1]);
+	string tokenized_line = tokenizer.TokenizeAndJuxtapose(argv[1], true, true);
 	cout <<  "[" << tokenized_line << "]" << endl;
 	return 0;
 }
