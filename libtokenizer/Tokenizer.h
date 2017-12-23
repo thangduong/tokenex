@@ -86,7 +86,7 @@ public:
 
 	string Translit(const string& input_string);
 	list<tuple<int, int, int>> Tokenize(const string& input_string, bool translit, list<string>* token_list = 0);
-	string TokenizeAndJuxtapose(const string& input_string, bool translit = true, list<pair<int, int>>* token_start_len = 0);
+	string TokenizeAndJuxtapose(const string& input_string, bool translit = true, bool keep_original_in_regex = false, list<tuple<int, int, int>>* token_start_len_type = 0);
 	void LoadDefaultConfig(int config_type = DEFAULT_CONFIG_TYPE_STANDARD);
 };
 

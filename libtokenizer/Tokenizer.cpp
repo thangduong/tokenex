@@ -316,7 +316,7 @@ void Tokenizer::LoadDefaultConfig(int config_type) {
 		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9])+"), "<int>", false));
 
 		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+"), "<email>", false));
-		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^http[s]?://[a-zA-z.]+(/[a-zA-z.]+)*"), "<url>", false));
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^http[s]?://[^ ]*"), "<url>", false));
 	}
 
 	UpdateMinMaxLength();
@@ -395,8 +395,13 @@ list<tuple<int,int,int>> Tokenizer::Tokenize(const string& input_string, bool tr
 				}
 				tuple<int, int, int> token(marker, (int)matched_regex_token_len, 0);
 				result.push_back(token);
-				if (token_list)
-					token_list->push_back(Translit(input_string.substr(get<0>(token), get<1>(token)), translit));
+				if (token_list) {
+					string tok_replacement_str = get<1>(_exception_token_group_regex[regex_pattern_matched - REGEX_TOKEN_TYPE_START]);
+					if (!tok_replacement_str.empty())
+						token_list->push_back(Translit(tok_replacement_str, translit));
+					else
+						token_list->push_back(Translit(input_string.substr(get<0>(token), get<1>(token)), translit));
+				}
 
 				marker += (int)matched_regex_token_len;
 				start_marker = marker;
@@ -449,14 +454,25 @@ list<tuple<int,int,int>> Tokenizer::Tokenize(const string& input_string, bool tr
 	return result;
 }
 
-string Tokenizer::TokenizeAndJuxtapose(const string& input_string, bool translit, list<pair<int, int>>* token_start_len) {
+string Tokenizer::TokenizeAndJuxtapose(const string& input_string, bool translit, bool keep_original_in_regex, list<tuple<int, int, int>>* token_start_len_type) {
 	list<string> tokens;
-	list<tuple<int, int, int>> token_start_len_type = Tokenize(input_string, translit, &tokens);
+	list<tuple<int, int, int>> local_token_start_len_type;
+	if (token_start_len_type == nullptr)
+		token_start_len_type = &local_token_start_len_type;
+	(*token_start_len_type) = Tokenize(input_string, translit, &tokens);
 	string result;
-	for (auto token = tokens.begin(); token != tokens.end(); token++) {
+	auto slt = token_start_len_type->begin();
+	for (auto token = tokens.begin(); token != tokens.end();token++, slt++) {
 		if (!result.empty())
 			result += " ";
-		result += (*token);
+		if (
+				keep_original_in_regex
+				&& (get<2>(*slt)>=REGEX_TOKEN_TYPE_START)
+				&& (!get<1>(_exception_token_group_regex[get<2>(*slt) - REGEX_TOKEN_TYPE_START]).empty())
+			)
+			result += (*token)+"|"+input_string.substr(get<0>(*slt), get<1>(*slt));
+		else
+			result += (*token);
 	}
 	return result;
 }

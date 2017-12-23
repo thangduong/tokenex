@@ -4,6 +4,7 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
+#include <unordered_map>
 #include "Tokenizer.h"
 
 using namespace std;
@@ -36,7 +37,7 @@ int main(int argc, char* argv[]) {
 		 	cerr  << endl <<line.find_first_of("<b>")<<endl<<line.length()<<endl<< line << endl;
 			continue;
 		}
-		string tokenized_line = tokenizer.TokenizeAndJuxtapose(line);
+		string tokenized_line = tokenizer.TokenizeAndJuxtapose(line, true, true);
 		auto t2 = Clock::now();
 		auto read_time = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
 		auto tok_time = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
