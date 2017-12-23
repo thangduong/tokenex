@@ -46,8 +46,7 @@ void Tokenizer::LoadDefaultConfig(int config_type) {
 	_discard_delimiters.push_back("\t");
 	_discard_delimiters.push_back("\r");
 	_discard_delimiters.push_back("\n");
-	_discard_delimiters.push_back("\xc2");
-	_discard_delimiters.push_back("\xa0");
+	_discard_delimiters.push_back("\xc2\xa0");
 	_discard_delimiters.push_back(u8"¬");	// not sure what this is.  probably just noise!
 
 	if (config_type & DEFUALT_CONFIG_TYPE_KEEP_ALL) {
