@@ -114,7 +114,15 @@ void Tokenizer::LoadDefaultConfig(int config_type) {
 	_retain_delimiters.push_back(u8"£");
 	_retain_delimiters.push_back(u8"±");
 	_retain_delimiters.push_back(u8"");
+	_retain_delimiters.push_back(u8"ʿ");
+	_retain_delimiters.push_back(u8"º");
+	_retain_delimiters.push_back(u8"°");
+	_retain_delimiters.push_back(u8"„");
 
+	_exception_tokens.push_back(u8"ºC");
+	_exception_tokens.push_back(u8"ºF");
+	_exception_tokens.push_back(u8"°C");
+	_exception_tokens.push_back(u8"°F");
 	_exception_tokens.push_back(u8"'s");
 	_exception_tokens.push_back(u8"'S");
 	_exception_tokens.push_back(u8"n't");
@@ -133,10 +141,10 @@ void Tokenizer::LoadDefaultConfig(int config_type) {
 	_exception_tokens.push_back(u8"'M");
 	_exception_tokens.push_back(u8"’m");
 	_exception_tokens.push_back(u8"’M");
-	_exception_tokens.push_back(u8"s'");
+/*	_exception_tokens.push_back(u8"s'");
 	_exception_tokens.push_back(u8"S'");
 	_exception_tokens.push_back(u8"s’");
-	_exception_tokens.push_back(u8"S’");
+	_exception_tokens.push_back(u8"S’");*/	// not quite right.  consider, for example, "Jesus' house" or "boxes' edges"
 	_exception_tokens.push_back(u8"gov’t");
 	_exception_tokens.push_back(u8"Gov’t");
 	_exception_tokens.push_back(u8"GOV’T");
@@ -170,8 +178,13 @@ void Tokenizer::LoadDefaultConfig(int config_type) {
 	_exception_tokens.push_back(">=");
 	_exception_tokens.push_back("<=");
 
+	_exception_tokens_delimited_before.push_back("Co.");
+	_exception_tokens_delimited_before.push_back("co.");
+	_exception_tokens_delimited_before.push_back("Ph.D.");
 	_exception_tokens_delimited_before.push_back("dr.");
 	_exception_tokens_delimited_before.push_back("Dr.");
+	_exception_tokens_delimited_before.push_back("st.");
+	_exception_tokens_delimited_before.push_back("St.");
 	_exception_tokens_delimited_before.push_back("no.");
 	_exception_tokens_delimited_before.push_back("No.");
 	_exception_tokens_delimited_before.push_back("mr.");
@@ -203,6 +216,8 @@ void Tokenizer::LoadDefaultConfig(int config_type) {
 	_exception_tokens_delimited_before.push_back("rock'N'roll");
 
 
+	_translit_map[u8"ºC"]=u8"°C";
+	_translit_map[u8"ºF"]=u8"°F";
 	_translit_map[u8"™"] = "(tm)";
 	_translit_map[u8"“"] = "\"";
 	_translit_map[u8"”"] = "\"";
@@ -212,6 +227,7 @@ void Tokenizer::LoadDefaultConfig(int config_type) {
 	_translit_map[u8"—"] = "--";
 	_translit_map[u8"′"] = "'";
 	_translit_map[u8"`"] = "'";
+	_translit_map[u8"ʿ"] = "'";
 	_translit_map[u8"’"] = "'";
 	_translit_map[u8"‘"] = "'";
 	_translit_map[u8"…"] = "...";
@@ -258,9 +274,11 @@ void Tokenizer::LoadDefaultConfig(int config_type) {
 	_translit_map[u8"à"] = "a";
 	_translit_map[u8"á"] = "a";
 	_translit_map[u8"â"] = "a";
+	_translit_map[u8"ǎ"] = "a";
 	_translit_map[u8"ã"] = "a";
 	_translit_map[u8"ä"] = "a";
 	_translit_map[u8"å"] = "a";
+	_translit_map[u8"ā"] = "a";
 
 	_translit_map[u8"æ"] = "ae";
 
@@ -286,6 +304,7 @@ void Tokenizer::LoadDefaultConfig(int config_type) {
 	_translit_map[u8"ú"] = "u";
 	_translit_map[u8"û"] = "u";
 	_translit_map[u8"ü"] = "u";
+	_translit_map[u8"ǔ"] = "u";
 
 	_translit_map[u8"ý"] = "y";
 	_translit_map[u8"ÿ"] = "y";
@@ -295,12 +314,15 @@ void Tokenizer::LoadDefaultConfig(int config_type) {
 	_translit_map[u8"ñ"] = "n";
 
 	_translit_map[u8"Š"] = "S";
+	_translit_map[u8"ţ"] = "t";
 	// tuple meaning:
 	//	0 = regular expression
 	//	1 = string to identify token, if "", then string is actual matched string
 	//	2 = true if this can act as a retain delimiter, false if not
 
 	if (!(config_type & DEFAULT_CONFIG_TYPE_NO_REGEX)) {
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([\\!]+)"), "", true));
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([\\?]+)"), "", true));
 		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]*\\.(?:[0-9])+)(?:km|mi\\.|ml|mm|kg|g|Kg|KG)"), "<decimal>", false));
 		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]*)(?:km|mi\\.|ml|mm|kg|g|Kg|KG)"), "<int>", false));
 		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]*\\.[0-9]+)(?:[mMBbkK])"), "<decimal>", false));
@@ -311,6 +333,7 @@ void Tokenizer::LoadDefaultConfig(int config_type) {
 		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]0s)"), "<decade>", false));
 		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^((\\([0-9][0-9][0-9]\\)|[0-9][0-9][0-9])[ -]*[0-9][0-9][0-9][ -]*[0-9][0-9][0-9][0-9])"), "<phone>", false));
 		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^(([0-9][0-9][0-9]|[0-9][0-9]|[0-9])(?:,[0-9][0-9][0-9])+)"), "<large-int>", false));
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([A-Za-z][.]([A-Za-z][.])+)"), "", true)); // e.g. G.I.Joe -> G.I. Joe
 		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^(([A-Za-z][.])+[A-Za-z]?)"), "", false));
 		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([=-]+)"), "", true));
 		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^(\\.\\.+)"), "", true));
@@ -392,37 +415,47 @@ list<tuple<int,int,int>> Tokenizer::Tokenize(const string& input_string, bool tr
 				continue;
 		}
 
-		int regex_pattern_matched;
-		pair<size_t,size_t> matched_regex_token_len = RegexStringMatch(_exception_token_group_regex, input_string, marker, (marker == start_marker), &regex_pattern_matched);
-		if ((matched_regex_token_len.first>0) && (get<2>(_exception_token_group_regex[regex_pattern_matched - REGEX_TOKEN_TYPE_START]) || (marker == start_marker))) {
-			if (get<2>(_exception_token_group_regex[regex_pattern_matched - REGEX_TOKEN_TYPE_START])) {
-				// can act as delimiter, no need to check that the second piece is delimiter.  just skip forward
-				// treat as if delimiter
-				if (start_marker < marker) {
-					tuple<int, int, int> token(start_marker, marker - start_marker, 0);
+		list<tuple<size_t,size_t,int>> matched_regex_token_len_list = RegexStringMatch(_exception_token_group_regex, input_string, marker, (marker == start_marker));
+		bool regex_matched = false;
+		for (auto matched_regex_token_len_itr = matched_regex_token_len_list.begin(); matched_regex_token_len_itr != matched_regex_token_len_list.end(); matched_regex_token_len_itr++) {
+ 			int regex_pattern_matched = get<2>(*matched_regex_token_len_itr);
+ 			auto matched_regex_token_len = (*matched_regex_token_len_itr);
+ 			size_t match_captured_len = get<0>(matched_regex_token_len);
+ 			size_t match_len = get<1>(matched_regex_token_len);
+			if ((match_captured_len>0) && (get<2>(_exception_token_group_regex[regex_pattern_matched]) || (marker == start_marker))) {
+				if (get<2>(_exception_token_group_regex[regex_pattern_matched])) {
+					// can act as delimiter, no need to check that the second piece is delimiter.  just skip forward
+					// treat as if delimiter
+					if (start_marker < marker) {
+						tuple<int, int, int> token(start_marker, marker - start_marker, 0);
+						result.push_back(token);
+						if (token_list)
+							token_list->push_back(Translit(input_string.substr(get<0>(token), get<1>(token)), translit));
+					}
+					tuple<int, int, int> token(marker, (int)match_captured_len, regex_pattern_matched+REGEX_TOKEN_TYPE_START);
 					result.push_back(token);
-					if (token_list)
-						token_list->push_back(Translit(input_string.substr(get<0>(token), get<1>(token)), translit));
+					if (token_list) {
+						string tok_replacement_str = get<1>(_exception_token_group_regex[regex_pattern_matched]);
+						if (!tok_replacement_str.empty())
+							token_list->push_back(Translit(tok_replacement_str, translit));
+						else
+							token_list->push_back(Translit(input_string.substr(get<0>(token), get<1>(token)), translit));
+					}
+					marker += (int)match_captured_len;
+					start_marker = marker;
+					regex_matched = true;
+					break;
 				}
-				tuple<int, int, int> token(marker, (int)matched_regex_token_len.first, 0);
-				result.push_back(token);
-				if (token_list) {
-					string tok_replacement_str = get<1>(_exception_token_group_regex[regex_pattern_matched - REGEX_TOKEN_TYPE_START]);
-					if (!tok_replacement_str.empty())
-						token_list->push_back(Translit(tok_replacement_str, translit));
-					else
-						token_list->push_back(Translit(input_string.substr(get<0>(token), get<1>(token)), translit));
+				else {
+					if (CheckDelimiters((int)match_captured_len, (int)match_len, regex_pattern_matched+REGEX_TOKEN_TYPE_START, input_string, start_marker, marker, result, translit, token_list)) {
+						regex_matched = true;
+						break;
+					}
 				}
-
-				marker += (int)matched_regex_token_len.first;
-				start_marker = marker;
-				continue;
-			}
-			else {
-				if (CheckDelimiters((int)matched_regex_token_len.first, (int)matched_regex_token_len.second, regex_pattern_matched, input_string, start_marker, marker, result, translit, token_list))
-					continue;
 			}
 		}
+		if (regex_matched)
+			continue;
 
 		size_t discard_token_len = ExactStringMatch(_discard_delimiters, input_string, marker);
 		if (discard_token_len > 0) {
