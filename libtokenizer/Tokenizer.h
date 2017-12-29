@@ -13,10 +13,31 @@ class Tokenizer
 	enum {
 		REGEX_TOKEN_TYPE_START = 100
 	};
+
+	/**
+	Tokenizer configuration type.  Several things are configurable:
+	1. whether to keep all text, including white spaces.
+	2. whether to use regex when tokenize
+	3. whether to use special tokens (<int>, <decimal>, etc.) when tokenize
+	Multiple configurations can be ORed (|) together.
+	*/
 	enum DefaultConfigType {
+		/**
+		Use all standard default configurations: discard \r\n\s, use regex, use special tokens
+		*/
 		DEFAULT_CONFIG_TYPE_STANDARD = 0,
+		/**
+		If used, turns keep all text (\r\n\s)
+		*/
 		DEFUALT_CONFIG_TYPE_KEEP_ALL = 1,
-		DEFAULT_CONFIG_TYPE_NO_REGEX = 2
+		/**
+		If used, disables regex
+		*/
+		DEFAULT_CONFIG_TYPE_NO_REGEX = 2,
+		/**
+		If used, disables use of special tokens.  This is ignored if regex is not used.
+		*/
+		DEFAULT_CONFIG_TYPE_NO_SPECIAL_TOKENS = 4,
 	};
 	list<string> _discard_delimiters;
 	list<string> _retain_delimiters;
@@ -49,8 +70,8 @@ class Tokenizer
 			candidate_itr != candidates.end(); candidate_itr++, idx++) {
 			if (test_all_regex || (get<2>(*candidate_itr))) {
 				smatch sm;
-				regex_search(next(input_string.begin(), start),
-						input_string.end(),
+				regex_search(
+						next(input_string.begin(), start), input_string.end(),
 						sm, get<0>(*candidate_itr));
 				if (sm.length()) {
 					// return is: length of string to capture,

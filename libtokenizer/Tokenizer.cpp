@@ -322,37 +322,27 @@ void Tokenizer::LoadDefaultConfig(int config_type) {
 	//	2 = true if this can act as a retain delimiter, false if not
 
 	if (!(config_type & DEFAULT_CONFIG_TYPE_NO_REGEX)) {
-		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([\\!]+)"), "", true));
-		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([\\?]+)"), "", true));
-		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]*\\.(?:[0-9])+)(?:km|mi\\.|ml|mm|kg|g|Kg|KG)"), "<decimal>", false));
-		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]*)(?:km|mi\\.|ml|mm|kg|g|Kg|KG)"), "<int>", false));
-		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]*\\.[0-9]+)(?:[mMBbkK])"), "<decimal>", false));
-		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]+)(?:[mMBbkK])"), "<int>", false));
-		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]*\\.[0-9]+)"), "<decimal>", false));
+		bool use_special_tokens = (config_type & DEFAULT_CONFIG_TYPE_NO_SPECIAL_TOKENS)?false:true;
+#define UST(use_special_tokens, x)  (use_special_tokens?x:"")
 
-		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([12][0-9][0-9]0s)"), "<decade-year>", false));
-		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]0s)"), "<decade>", false));
-		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^((\\([0-9][0-9][0-9]\\)|[0-9][0-9][0-9])[ -]*[0-9][0-9][0-9][ -]*[0-9][0-9][0-9][0-9])"), "<phone>", false));
-		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^(([0-9][0-9][0-9]|[0-9][0-9]|[0-9])(?:,[0-9][0-9][0-9])+)"), "<large-int>", false));
-		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([A-Za-z][.]([A-Za-z][.])+)"), "", true)); // e.g. G.I.Joe -> G.I. Joe
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]*\\.(?:[0-9])+)(?:km|mi\\.|ml|mm|cm|kg|g|Kg|MB|Mb|Kg|KG|[mMBbkK]|)"), UST(use_special_tokens, "<decimal>"), false));
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-3][0-9]+|[4-9][0-9]*)(?:km|mi\\.|ml|mm|cm|kg|g|Kg|MB|Mb|Kg|KG|[mMBbkK]|)"), UST(use_special_tokens, "<int>"), false));
+
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([12][0-9][0-9]0s)"), UST(use_special_tokens, "<decade-year>"), false));
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]0s)"), UST(use_special_tokens, "<decade>"), false));
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^((\\([0-9][0-9][0-9]\\)|[0-9][0-9][0-9])[ -]*[0-9][0-9][0-9][ -]*[0-9][0-9][0-9][0-9])"), UST(use_special_tokens, "<phone>"), false));
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^(([0-9][0-9][0-9]|[0-9][0-9]|[0-9])(?:,[0-9][0-9][0-9])+)"), UST(use_special_tokens, "<large-int>"), false));
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([\\!]+|[\\?]+|[=-]+|\\.\\.+|[A-Za-z][.]([A-Za-z][.])+)"), "", true));
 		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^(([A-Za-z][.])+[A-Za-z]?)"), "", false));
-		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([=-]+)"), "", true));
-		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^(\\.\\.+)"), "", true));
-		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]*[04-9]th|[0-9]*1st|[0-9]*[2]nd|[0-9]*3rd|13th|12th|11th)"), "<ordinal>", false));
-//		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]+k)"), "<int-k>", false));
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]*[04-9]th|[0-9]*1st|[0-9]*[2]nd|[0-9]*3rd|13th|12th|11th)"), UST(use_special_tokens, "<ordinal>"), false));
 
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^(0)"), UST(use_special_tokens, "<zero>"), false));
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^(1)"), UST(use_special_tokens, "<one>"), false));
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^(2)"), UST(use_special_tokens, "<two>"), false));
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^(3)"), UST(use_special_tokens, "<three>"), false));
 
-		// these are delicate.  if a number starts with 0-3, then it must have at least 2 digits
-		// if a number starts with 4-9, then it doesn't need to have at least 2 digits.  it can just be 1 digit.
-		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-3][0-9]+)"), "<int>", false));
-		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^(0)"), "<zero>", false));
-		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^(1)"), "<one>", false));
-		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^(2)"), "<two>", false));
-		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^(3)"), "<three>", false));
-		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]+)"), "<int>", false));
-
-		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^((\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+)"), "<email>", false));
-		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^((?:https?|ftp)://[^ ]*)"), "<url>", false));
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^((\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+)"), UST(use_special_tokens, "<email>"), false));
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^((?:https?|ftp)://[^ ]*)"), UST(use_special_tokens, "<url>"), false));
 	}
 
 	UpdateMinMaxLength();
