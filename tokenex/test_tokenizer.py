@@ -20,7 +20,7 @@ class TestTokenizer(unittest.TestCase):
 		test_strings = [
 			[
 				'\'$`:!%^)(][}{@#~-.";,™€°?*|…=+&/\—––’ʼ“”‘′¶″·¢⁄><−•·',
-				'\' $ ` : ! % ^ ) ( ] [ } { @ # ~ - . " ; , ™ € ° ? * | … = + & / \ — – – ’ ʼ “ ” ‘ ′ ¶ ″ · ¢ ⁄ > < − • ·',
+				'\' $ ` : ! % ^ ) ( ] [ } { @ # ~ - . " ; , ™ € ° ? * | … = + & / \ —–– ' ' " " ' ' ¶ ″ · ¢ ⁄ > < − • ·',
 			],
 			[
 			 'The music was better in the 1980s',
@@ -42,6 +42,9 @@ class TestTokenizer(unittest.TestCase):
 		tok = Tokenizer()
 		for test_case in test_strings:
 			tokens = [x[0] for x in tok.tokenize(test_case[0])]
+			print(test_case[0])
+			print('%s'%' '.join(tokens))
+			print(test_case[1])
 			self.assertEqual(' '.join(tokens), test_case[1])
 
 if __name__ == "__main__":
