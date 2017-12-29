@@ -205,6 +205,7 @@ void Tokenizer::LoadDefaultConfig(int config_type) {
 	_exception_tokens_delimited_before.push_back("hr.");
 	_exception_tokens_delimited_before.push_back("hosp.");
 	_exception_tokens_delimited_before.push_back("lt.");
+	_exception_tokens_delimited_before.push_back("Lt.");
 	_exception_tokens_delimited_before.push_back("gen.");
 	_exception_tokens_delimited_before.push_back("Gen.");
 	_exception_tokens_delimited_before.push_back("e-mail");
