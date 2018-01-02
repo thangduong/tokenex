@@ -31,12 +31,13 @@ class Tokenizer:
 		self._tokenizer = tok_so.LoadTokenizer()
 		tok_so.LoadDefaultConfig(self._tokenizer, c_int(config))
 
-	def tokenize(self, string, translit=True):
+	def tokenize(self, string, translit=True, regex_keep_original=False):
 		"""
 		Simple tokenization of a string using the tokenizer.
-		:param string: the string to tokenize
-		:param translit: True to do utf-8 to ASCII translit.  False otherwise.
-		:return: a list of tokens.  If the tokenizer's created with config=3, then ''.join(result) should be the original
+		@param string: the string to tokenize
+		@param translit: True to do utf-8 to ASCII translit.  False otherwise.
+		@param regex_keep_original: Keep original text when using regex with special tokens (e.g. instead of just <int>, use <int>|100)
+		@return: a list of tokens.  If the tokenizer's created with config=3, then ''.join(result) should be the original
 		string.
 		"""
 		input_string = c_char_p(string.encode('utf-8', errors="ignore"))
@@ -50,11 +51,28 @@ class Tokenizer:
 			ctoken = tok_so.NextToken(tokenizer_result, byref(start), byref(len), byref(type))
 			if ctoken is not None:
 				token = c_char_p(ctoken).value.decode('utf-8', errors="ignore")
+				if (type.value> 0) and (regex_keep_original) and token[0] == '<' and token[-1] == '>':
+					token = token + "|" + string[start.value:(start.value+len.value)]
 				result.append(token)
 			else:
 				done = True
 		tok_so.FreeTokenizedResult(tokenizer_result)
 		return result
+
+	def split_token(self, token):
+		"""
+		Split a compound token into 2 of its parts.  For special tokens, its original value is appended with |.  This function
+		splits them into two.
+		@param token: input token, can be a normal token or <int>|100.  <int>|100 would return <int> and 100.
+		@return: two pieces of the token.  if token is not of special type, then both pieces are the same.
+		"""
+		left = right = token
+		if token[0] == "<":
+			end = token.find('>')
+			if end > 0 and end < len(token)-1 and token[end+1]=='|':
+				left = token[:end+1]
+				right = token[end+2:]
+		return left, right
 
 	def tokenize_ex(self, string, translit=True):
 		"""
