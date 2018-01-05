@@ -334,9 +334,9 @@ void Tokenizer::LoadDefaultConfig(int config_type) {
 		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]0s)"), UST(use_special_tokens, "<decade>"), false));
 		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^((\\([0-9][0-9][0-9]\\)|[0-9][0-9][0-9])[ -]*[0-9][0-9][0-9][ -]*[0-9][0-9][0-9][0-9])"), UST(use_special_tokens, "<phone>"), false));
 		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^(([0-9][0-9][0-9]|[0-9][0-9]|[0-9])(?:,[0-9][0-9][0-9])+)"), UST(use_special_tokens, "<large-int>"), false));
-		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([\\!]+|[\\?]+|(_|=|-|—|–)+|\\.\\.+|[A-Za-z][.]([A-Za-z][.])+)"), "", true));
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([\\!]+|[\\?]+|(_|=|-|—|–)+|\\.\\.+|[A-Za-z][.]([A-Za-z][.])+|</?[a-zA-Z]*>|<[a-zA-Z]*[ ]*/>)"), "", true));
 		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^(([A-Za-z][.])+[A-Za-z]?)"), "", false));
-		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^((0x|0X)?[a-fA-F0-9]+)"), "<hex>", false));
+		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^((0x|0X)[a-fA-F0-9]+)"), "<hex>", false));
 		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]*[04-9]th|[0-9]*1st|[0-9]*[2]nd|[0-9]*3rd|13th|12th|11th)"), UST(use_special_tokens, "<ordinal>"), false));
 
 		_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^(0)"), UST(use_special_tokens, "<zero>"), false));
