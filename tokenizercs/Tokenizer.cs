@@ -63,7 +63,7 @@ namespace TokenizerCS
             return token_list;
         }
 
-        public List<string> Tokenize(string input_string, bool translit=true)
+        public List<string> Tokenize(string input_string, bool translit=true, bool regex_keep_original=false)
         {
             List<string> token_list = new List<string>();
             IntPtr tokenized_result = TokenizeString(_tokenizer, input_string, translit);
@@ -72,7 +72,10 @@ namespace TokenizerCS
             IntPtr native_string = IntPtr.Zero;
             while ((native_string = NextToken(tokenized_result, ref token.start, ref token.len, ref token.type)) != IntPtr.Zero) {
                 token.token = Marshal.PtrToStringAnsi(native_string);
-                token_list.Add(token.token);
+                var token_value = token.token;
+                if ((token.type > 0) && (regex_keep_original) && (token_value[0] == '<') && (token_value[token_value.Length - 1] == '>'))
+                    token_value = token_value + "|" + input_string.Substring(token.start, token.len);
+                token_list.Add(token_value);
             }
             FreeTokenizedResult(tokenized_result);
             return token_list;

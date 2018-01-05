@@ -21,6 +21,8 @@ namespace tokenizercsTest
             {
                 System.Console.WriteLine("{0}, {1}, {2}, {3}", token.token, token.start, token.len, token.type);
             }
+            var tokenizeResult = tok.Tokenize(input_string, true, true);
+            System.Console.WriteLine(String.Join(" ", tokenizeResult.ToArray()));
         }
     }
 }
