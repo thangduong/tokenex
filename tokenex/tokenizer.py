@@ -59,21 +59,6 @@ class Tokenizer:
 		tok_so.FreeTokenizedResult(tokenizer_result)
 		return result
 
-	def split_token(self, token):
-		"""
-		Split a compound token into 2 of its parts.  For special tokens, its original value is appended with |.  This function
-		splits them into two.
-		@param token: input token, can be a normal token or <int>|100.  <int>|100 would return <int> and 100.
-		@return: two pieces of the token.  if token is not of special type, then both pieces are the same.
-		"""
-		left = right = token
-		if token[0] == "<":
-			end = token.find('>')
-			if end > 0 and end < len(token)-1 and token[end+1]=='|':
-				left = token[:end+1]
-				right = token[end+2:]
-		return left, right
-
 	def tokenize_ex(self, string, translit=True):
 		"""
 		Tokneize a string as the tokenize(.) function, but this function returns more information.
@@ -107,3 +92,19 @@ class Tokenizer:
 
 	def __exit__(self, exc_type, exc_value, traceback):
 		self.cleanup()
+
+
+def split_token(self, token):
+	"""
+	Split a compound token into 2 of its parts.  For special tokens, its original value is appended with |.  This function
+	splits them into two.
+	@param token: input token, can be a normal token or <int>|100.  <int>|100 would return <int> and 100.
+	@return: two pieces of the token.  if token is not of special type, then both pieces are the same.
+	"""
+	left = right = token
+	if token[0] == "<":
+		end = token.find('>')
+		if end > 0 and end < len(token)-1 and token[end+1]=='|':
+			left = token[:end+1]
+			right = token[end+2:]
+	return left, right
