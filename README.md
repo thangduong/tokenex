@@ -101,7 +101,7 @@ Reference tokenizerCS package (.\tokenex\tokenizerCS.dll)
 
 
 ```csharp
-using TokenizerCS;
+using Tokenizex;
 ```
 
 Then:
