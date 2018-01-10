@@ -84,6 +84,26 @@ class Tokenizer:
 		tok_so.FreeTokenizedResult(tokenizer_result)
 		return result
 
+	def tokenize_ex2(self, string, translit=True):
+		"""
+		Tokenize a string and return tokens and info.  This is similiar to tokenize_ex except that
+		the return is a tuple of all the pieces instead of an array of array which contains the pieces.
+		@param string: input string
+		@param translit: true to translit
+		@return:
+		(tokens, starts, lens, types)
+		tokens = list of tokens
+		starts = list of starting points
+		lens = list of len of tokens
+		types = list of types of tokens
+		"""
+		result = self.tokenize_ex(string, translit)
+		tokens = [x[0] for x in result]
+		starts = [x[1] for x in result]
+		lens = [x[2] for x in result]
+		types = [x[3] for x in result]
+		return tokens, starts, lens, types
+
 	def cleanup(self):
 		tok_so.UnloadTokenizer(self._tokenizer)
 
@@ -94,7 +114,7 @@ class Tokenizer:
 		self.cleanup()
 
 
-def split_token(self, token):
+def split_token(token):
 	"""
 	Split a compound token into 2 of its parts.  For special tokens, its original value is appended with |.  This function
 	splits them into two.
@@ -108,3 +128,10 @@ def split_token(self, token):
 			left = token[:end+1]
 			right = token[end+2:]
 	return left, right
+
+if __name__ == "__main__":
+	tok = Tokenizer(0)
+	t,s,l,ty = tok.tokenize_ex2("this is a test")
+	print(t)
+	print(s)
+	print(l)
