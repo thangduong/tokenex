@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 
-namespace TokenizerCS
+namespace Tokenex
 {
     public class Tokenizer : IDisposable
     {
