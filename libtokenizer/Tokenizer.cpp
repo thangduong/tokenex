@@ -536,3 +536,53 @@ string Tokenizer::Translit(const string& input_string) {
 		result += input_string.substr(start_marker);
 	return result;
 }
+
+void Tokenizer::ConvertToUtf8Indices(const char* str, list<tuple<int,int,int>>* token_list) {
+    int byte_idx = 0;
+    int char_idx = 0;
+    for (auto token_idx = token_list->begin(); token_idx != token_list->end(); token_idx++) {
+        while (byte_idx < get<0>(token_idx)) {
+            int char_size;
+            switch (str[byte_idx] & 0x80) {
+            case 0xc0:
+            char_size = 2;
+            break;
+            case 0xe0:
+            char_size = 3;
+            break;
+            case 0xf0:
+            char_size = 4;
+            break;
+            case 0x00:
+            default:
+            char_size = 1;
+            break;
+            }
+            char_idx += 1;
+            byte_idx += char_size;
+        }
+        int next_target = byte_idx + get<1>(token_idx);
+        get<0>(token_idx) = char_idx;
+        while (byte_idx < next_target) {
+            int char_size;
+            switch (str[byte_idx] & 0x80) {
+            case 0xc0:
+            char_size = 2;
+            break;
+            case 0xe0:
+            char_size = 3;
+            break;
+            case 0xf0:
+            char_size = 4;
+            break;
+            case 0x00:
+            default:
+            char_size = 1;
+            break;
+            }
+            char_idx += 1;
+            byte_idx += char_size;
+        }
+        get<1>(token_idx) = char_idx - get<0>(token_idx);
+    }
+}
