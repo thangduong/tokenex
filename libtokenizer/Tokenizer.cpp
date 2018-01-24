@@ -536,3 +536,13 @@ string Tokenizer::Translit(const string& input_string) {
 		result += input_string.substr(start_marker);
 	return result;
 }
+
+bool Tokenizer::LoadCustomConfig(const string& filename) {
+	bool result = false;
+	return result;
+}
+
+bool Tokenizer::SaveConfig(const string& filename) {
+	bool result = true;
+	return result;
+}

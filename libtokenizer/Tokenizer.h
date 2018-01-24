@@ -14,31 +14,6 @@ class Tokenizer
 		REGEX_TOKEN_TYPE_START = 100
 	};
 
-	/**
-	Tokenizer configuration type.  Several things are configurable:
-	1. whether to keep all text, including white spaces.
-	2. whether to use regex when tokenize
-	3. whether to use special tokens (<int>, <decimal>, etc.) when tokenize
-	Multiple configurations can be ORed (|) together.
-	*/
-	enum DefaultConfigType {
-		/**
-		Use all standard default configurations: discard \r\n\s, use regex, use special tokens
-		*/
-		DEFAULT_CONFIG_TYPE_STANDARD = 0,
-		/**
-		If used, turns keep all text (\r\n\s)
-		*/
-		DEFUALT_CONFIG_TYPE_KEEP_ALL = 1,
-		/**
-		If used, disables regex
-		*/
-		DEFAULT_CONFIG_TYPE_NO_REGEX = 2,
-		/**
-		If used, disables use of special tokens.  This is ignored if regex is not used.
-		*/
-		DEFAULT_CONFIG_TYPE_NO_SPECIAL_TOKENS = 4,
-	};
 	list<string> _discard_delimiters;
 	list<string> _retain_delimiters;
 	list<string> _exception_tokens;
@@ -104,12 +79,61 @@ class Tokenizer
 public:
 	Tokenizer();
 	virtual ~Tokenizer();
+
 	/**
 	Translit unicode characters in a string.
 	*/
 	string Translit(const string& input_string);
+	
+	/**
+	Tokenize a string and return extended token information
+	*/
 	list<tuple<int, int, int>> Tokenize(const string& input_string, bool translit, list<string>* token_list = 0);
+	
+	/**
+	Tokenize a string and create a new string where all the tokens are appended with " " in between
+	*/
 	string TokenizeAndJuxtapose(const string& input_string, bool translit = true, bool keep_original_in_regex = false, list<tuple<int, int, int>>* token_start_len_type = 0);
+	
+	/**
+	Load default configuration
+	*/
 	void LoadDefaultConfig(int config_type = DEFAULT_CONFIG_TYPE_STANDARD);
+	
+	/**
+	Load custom configuration from a file
+	*/
+	bool LoadCustomConfig(const string& filename);
+
+	/**
+	Save custom config to a file
+	*/
+	bool SaveConfig(const string& filename);
+
+	/**
+	Tokenizer configuration type.  Several things are configurable:
+	1. whether to keep all text, including white spaces.
+	2. whether to use regex when tokenize
+	3. whether to use special tokens (<int>, <decimal>, etc.) when tokenize
+	Multiple configurations can be ORed (|) together.
+	*/
+	enum DefaultConfigType {
+		/**
+		Use all standard default configurations: discard \r\n\s, use regex, use special tokens
+		*/
+		DEFAULT_CONFIG_TYPE_STANDARD = 0,
+		/**
+		If used, turns keep all text (\r\n\s)
+		*/
+		DEFUALT_CONFIG_TYPE_KEEP_ALL = 1,
+		/**
+		If used, disables regex
+		*/
+		DEFAULT_CONFIG_TYPE_NO_REGEX = 2,
+		/**
+		If used, disables use of special tokens.  This is ignored if regex is not used.
+		*/
+		DEFAULT_CONFIG_TYPE_NO_SPECIAL_TOKENS = 4,
+	};
 };
 
