@@ -74,8 +74,14 @@ class Tokenizer
 			return input_string;
 	}
 
-
 	void UpdateMinMaxLength();
+
+	/**
+	Correct indices and length in token_list to appropriate values assuming input str is UTF-8.
+
+	@param str
+	*/
+	void ConvertToUtf8Indices(const char* str, list<tuple<int,int,int>>* token_list);
 public:
 	Tokenizer();
 	virtual ~Tokenizer();
