@@ -390,7 +390,7 @@ bool Tokenizer::CheckDelimiters(int matched_token_len, int check_len,
 }
 
 
-list<tuple<int,int,int>> Tokenizer::Tokenize(const string& input_string, bool translit, list<string>* token_list) {
+list<tuple<int,int,int>> Tokenizer::Tokenize(const string& input_string, bool translit, list<string>* token_list, bool utf8_encoding) {
 	int start_marker = 0;
 	int marker = 0;
 	list<tuple<int, int, int>> result;
@@ -489,15 +489,17 @@ list<tuple<int,int,int>> Tokenizer::Tokenize(const string& input_string, bool tr
 		if (token_list)
 			token_list->push_back(Translit(input_string.substr(get<0>(token), get<1>(token)),translit));
 	}
+	if (utf8_encoding)
+		ConvertToUtf8Indices(input_string.c_str(), &result);
 	return result;
 }
 
-string Tokenizer::TokenizeAndJuxtapose(const string& input_string, bool translit, bool keep_original_in_regex, list<tuple<int, int, int>>* token_start_len_type) {
+string Tokenizer::TokenizeAndJuxtapose(const string& input_string, bool translit, bool keep_original_in_regex, list<tuple<int, int, int>>* token_start_len_type, bool utf8_encoding) {
 	list<string> tokens;
 	list<tuple<int, int, int>> local_token_start_len_type;
 	if (token_start_len_type == nullptr)
 		token_start_len_type = &local_token_start_len_type;
-	(*token_start_len_type) = Tokenize(input_string, translit, &tokens);
+	(*token_start_len_type) = Tokenize(input_string, translit, &tokens, false);
 	string result;
 	auto slt = token_start_len_type->begin();
 	for (auto token = tokens.begin(); token != tokens.end();token++, slt++) {
@@ -512,6 +514,8 @@ string Tokenizer::TokenizeAndJuxtapose(const string& input_string, bool translit
 		else
 			result += (*token);
 	}
+	if (utf8_encoding)
+		ConvertToUtf8Indices(input_string.c_str(), token_start_len_type);
 	return result;
 }
 
@@ -539,54 +543,46 @@ string Tokenizer::Translit(const string& input_string) {
 
 
 void Tokenizer::ConvertToUtf8Indices(const char* str, list<tuple<int,int,int>>* token_list) {
+	if (token_list == 0)
+		return;
     int byte_idx = 0;
     int char_idx = 0;
     for (auto token_idx = token_list->begin(); token_idx != token_list->end(); token_idx++) {
-        while (byte_idx < get<0>(token_idx)) {
+        while (byte_idx < get<0>(*token_idx)) {
             int char_size;
-            switch (str[byte_idx] & 0x80) {
-            case 0xc0:
-            char_size = 2;
-            break;
-            case 0xe0:
-            char_size = 3;
-            break;
-            case 0xf0:
-            char_size = 4;
-            break;
-            case 0x00:
-            default:
-            char_size = 1;
-            break;
-            }
-            char_idx += 1;
+			char c = str[byte_idx];
+			if ((c & 0x80) == 0)    char_size = 1;
+			else if ((c & 0xE0) == 0xC0) char_size = 2;
+			else if ((c & 0xF0) == 0xE0) char_size = 3;
+			else if ((c & 0xF8) == 0xF0) char_size = 4;
+			else {
+				// error, but use 1
+				char_size = 1;
+			}
+			char_idx += 1;
             byte_idx += char_size;
         }
-        int next_target = byte_idx + get<1>(token_idx);
-        get<0>(token_idx) = char_idx;
+        int next_target = byte_idx + get<1>(*token_idx);
+        get<0>(*token_idx) = char_idx;
         while (byte_idx < next_target) {
-            int char_size;
-            switch (str[byte_idx] & 0x80) {
-            case 0xc0:
-            char_size = 2;
-            break;
-            case 0xe0:
-            char_size = 3;
-            break;
-            case 0xf0:
-            char_size = 4;
-            break;
-            case 0x00:
-            default:
-            char_size = 1;
-            break;
-            }
-            char_idx += 1;
+			int char_size;
+			char c = str[byte_idx];
+			if ((c & 0x80) == 0)    char_size = 1;
+			else if ((c & 0xE0) == 0xC0) char_size = 2;
+			else if ((c & 0xF0) == 0xE0) char_size = 3;
+			else if ((c & 0xF8) == 0xF0) char_size = 4;
+			else {
+				// error, but use 1
+				char_size = 1;
+			}
+			char_idx += 1;
             byte_idx += char_size;
         }
-        get<1>(token_idx) = char_idx - get<0>(token_idx);
+        get<1>(*token_idx) = char_idx - get<0>(*token_idx);
     }
-}bool Tokenizer::LoadCustomConfig(const string& filename) {
+}
+
+bool Tokenizer::LoadCustomConfig(const string& filename) {
 	bool result = false;
 	return result;
 }

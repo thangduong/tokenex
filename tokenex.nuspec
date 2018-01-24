@@ -13,7 +13,7 @@
     <tags>tokenizer,lex,lexical</tags>
   </metadata>
   <files>
-    <file src="bin\tokenizer.dll" target="lib\win10-x64\tokenizer.dll" />
-    <file src="bin\tokenizercs.dll" target="lib\net45\tokenizercs.dll" />
+    <file src="tokenex\tokenizer.dll" target="lib\win10-x64\tokenizer.dll" />
+    <file src="tokenex\tokenizercs.dll" target="lib\net45\tokenizercs.dll" />
   </files>
 </package>

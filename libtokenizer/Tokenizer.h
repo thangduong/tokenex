@@ -76,12 +76,11 @@ class Tokenizer
 
 	void UpdateMinMaxLength();
 
+
 	/**
 	Correct indices and length in token_list to appropriate values assuming input str is UTF-8.
-
-	@param str
 	*/
-	void ConvertToUtf8Indices(const char* str, list<tuple<int,int,int>>* token_list);
+	void ConvertToUtf8Indices(const char* str, list<tuple<int, int, int>>* token_list);
 public:
 	Tokenizer();
 	virtual ~Tokenizer();
@@ -93,13 +92,48 @@ public:
 	
 	/**
 	Tokenize a string and return extended token information
+
+	@param[in] input_string		string to tokenize.
+	@param[in] translit			whether to translit the resulting tokens or not
+	@param[out] token_list		output list of tokens. set to nullptr if not needed.
+	@param[in] utf8_encoding	true if the indices and lengths in the return value should be
+								under the assumption that input_string is a utf-8 string.  
+								Otherwise, everything would be byte based.
+	@return
+		a list of 3-tuple, each identifying a token in the input_string.  The tuple is interpreted as follows:
+		(<start_index>, <length>, <type>)
+		<start_index> is the start character of the token in input_string.
+		<length> is the length of the token.
+		<type> is the type of token based on regex. 
 	*/
-	list<tuple<int, int, int>> Tokenize(const string& input_string, bool translit, list<string>* token_list = 0);
+	list<tuple<int, int, int>> Tokenize(
+		const string& input_string,
+		bool translit = true, 
+		list<string>* token_list = nullptr,
+		bool utf8_encoding = true
+		);
 	
 	/**
 	Tokenize a string and create a new string where all the tokens are appended with " " in between
+
+
+	@param[in] input_string					string to tokenize.
+	@param[in] translit						whether to translit the resulting tokens or not
+	@param[in] keep_original_in_regex		whether to keep the original string when regex matches.  e.g. <int>|10 vs just <int>.
+	@param[out] token_start_len_type		output list of tokens desc (see tokenize). set to nullptr if not needed.
+	@param[in] utf8_encoding				true if the indices and lengths in token_start_len_type should be
+											under the assumption that input_string is a utf-8 string.
+											Otherwise, everything would be byte based.
+	@return
+		a string consisting of tokens joined with " " in between.
 	*/
-	string TokenizeAndJuxtapose(const string& input_string, bool translit = true, bool keep_original_in_regex = false, list<tuple<int, int, int>>* token_start_len_type = 0);
+	string TokenizeAndJuxtapose(
+		const string& input_string, 
+		bool translit = true, 
+		bool keep_original_in_regex = false, 
+		list<tuple<int, int, int>>* token_start_len_type = 0,
+		bool utf8_encoding = true
+		);
 	
 	/**
 	Load default configuration
