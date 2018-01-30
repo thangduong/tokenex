@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Tokenex</id>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
     <title>Tokenex</title>
     <authors>Thang Duong</authors>
     <owners>Thang Duong</owners>
@@ -13,6 +13,8 @@
     <tags>tokenizer,lex,lexical</tags>
   </metadata>
   <files>
+    <file src="tokenex\tokenizer.dll" target="build\tokenizer.dll" />
+    <file src="nuget\tokenex.targets" target="build\tokenex.targets" />
     <file src="tokenex\tokenizer.dll" target="lib\win10-x64\tokenizer.dll" />
     <file src="tokenex\tokenizercs.dll" target="lib\net45\tokenizercs.dll" />
   </files>

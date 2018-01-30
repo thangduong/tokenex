@@ -6,7 +6,7 @@ class BinaryDistribution(Distribution):
 		return False
 
 setup(name='tokenex',
-      version='0.1',
+      version='0.1.1',
       description='A flexible tokenizer',
       url='http://aka.ms/tokenex',
       author='Thang Duong',
