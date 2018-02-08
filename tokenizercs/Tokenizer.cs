@@ -16,7 +16,7 @@ namespace Tokenex
         [DllImport(@"tokenizer.dll")]
         public static extern void LoadDefaultConfig(IntPtr tokenizer, int config_type);
         [DllImport(@"tokenizer.dll")]
-        public static extern IntPtr TokenizeString(IntPtr tokenizer, string input_string, bool translit);
+        public static extern IntPtr TokenizeString(IntPtr tokenizer, byte[] input_string, bool translit);
         [DllImport(@"tokenizer.dll")]
         public static extern IntPtr NextToken(IntPtr result, ref int start, ref int len, ref int type);
         [DllImport(@"tokenizer.dll")]
@@ -42,6 +42,15 @@ namespace Tokenex
             LoadDefaultConfig(_tokenizer, config_type);
         }
 
+        public IntPtr TokenizeCSString(IntPtr tokenizer, string input_string, bool translit)
+        {
+            System.Text.Encoding utf_8 = System.Text.Encoding.UTF8;
+
+            // Convert a string to utf-8 bytes.
+            byte[] utf8Bytes = System.Text.Encoding.UTF8.GetBytes(input_string);
+            return TokenizeString(tokenizer, utf8Bytes, translit);
+        }
+
         /// <summary>
         /// Tokenize a string using the C++ native tokenizer.
         /// </summary>
@@ -51,7 +60,7 @@ namespace Tokenex
         public List<Token> TokenizeEx(string input_string, bool translit=true)
         {
             List<Token> token_list = new List<Token>();
-            IntPtr tokenized_result = TokenizeString(_tokenizer, input_string, translit);
+            IntPtr tokenized_result = TokenizeCSString(_tokenizer, input_string, translit);
             Token token;
             token.start = token.len = token.type = 0;
             IntPtr native_string = IntPtr.Zero;
@@ -66,7 +75,7 @@ namespace Tokenex
         public List<string> Tokenize(string input_string, bool translit=true, bool regex_keep_original=false)
         {
             List<string> token_list = new List<string>();
-            IntPtr tokenized_result = TokenizeString(_tokenizer, input_string, translit);
+            IntPtr tokenized_result = TokenizeCSString(_tokenizer, input_string, translit);
             Token token;
             token.start = token.len = token.type = 0;
             IntPtr native_string = IntPtr.Zero;
