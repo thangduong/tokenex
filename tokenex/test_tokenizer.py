@@ -1,3 +1,7 @@
+#-----------------------------------------------------------------------------------------------
+#  Copyright (c) Microsoft Corporation. All rights reserved.
+#  Licensed under the MIT License. See License.txt in the project root for license information.
+#-----------------------------------------------------------------------------------------------
 # code to test tokenizer for specific things
 #
 import unittest

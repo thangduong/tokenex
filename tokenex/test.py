@@ -1,3 +1,7 @@
+#----------------------------------------------------------------------------------------------
+#  Copyright (c) Microsoft Corporation. All rights reserved.
+#  Licensed under the MIT License. See License.txt in the project root for license information.
+#----------------------------------------------------------------------------------------------
 import tokenizer as t
 import sys
 input_string = "hello, world siic's! on----the 06th of this month and the 124th street, the 1st, 2nd, 3rd, 4th, 5th, the minor fall and the major lift"
