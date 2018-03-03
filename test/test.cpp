@@ -1,4 +1,8 @@
-﻿#include <Windows.h>
+﻿/*---------------------------------------------------------------------------------------------
+*  Copyright (c) Microsoft Corporation. All rights reserved.
+*  Licensed under the MIT License. See License.txt in the project root for license information.
+*--------------------------------------------------------------------------------------------*/
+#include <Windows.h>
 #include <stdio.h>
 #include "Tokenizer.h"
 #include <regex>
